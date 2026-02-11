@@ -1,0 +1,55 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: wordpress
+  annotations:
+    # Use NGINX Ingress Controller
+    kubernetes.io/ingress.class: nginx
+
+    # Sticky Sessions for multi-replica WordPress
+    # Ensures same user always routes to same pod (session consistency)
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "wordpress-affinity"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "86400"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "86400"
+    nginx.ingress.kubernetes.io/session-cookie-path: "/"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "Lax"
+    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "false"
+
+    # Client body size for file uploads
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+
+    # Timeouts for large file uploads
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+
+    # Force SSL redirect (uncomment when you have TLS certificate)
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # Rate limiting (optional, uncomment to enable)
+    # nginx.ingress.kubernetes.io/limit-rps: "10"
+spec:
+  ingressClassName: nginx
+  rules:
+  # Using IP-based access for now (no domain)
+  # When you get a domain, replace this with:
+  # - host: your-domain.com
+  #   http:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wordpress-service
+            port:
+              number: 80
+
+  # TLS configuration (add when you have a domain + cert)
+  # tls:
+  # - hosts:
+  #   - your-domain.com
+  #   secretName: wordpress-tls-secret

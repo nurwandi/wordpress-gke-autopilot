@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-config
+  namespace: wordpress
+data:
+  # WordPress Configuration
+  WORDPRESS_TABLE_PREFIX: "wp_"
+
+  # Redis Configuration (for Redis Object Cache plugin)
+  WP_REDIS_HOST: "redis-service"
+  WP_REDIS_PORT: "6379"
+  WP_REDIS_DATABASE: "0"
+  WP_CACHE_KEY_SALT: "wordpress_gcp_"
+
+  # WordPress optimizations
+  WP_MEMORY_LIMIT: "256M"
+  WP_MAX_MEMORY_LIMIT: "256M"
+
+  # PHP Configuration
+  PHP_MEMORY_LIMIT: "256M"
+  UPLOAD_MAX_FILESIZE: "64M"
+  POST_MAX_SIZE: "64M"

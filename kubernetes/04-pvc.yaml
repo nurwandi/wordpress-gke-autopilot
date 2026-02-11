@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: wordpress
+  labels:
+    app: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # Storage for WordPress uploads, themes, plugins
+      # GKE Autopilot uses Persistent Disk (standard HDD by default)
+      storage: 10Gi
+  # GKE Autopilot auto-provisions PV with standard storage class
+  storageClassName: standard-rwo
